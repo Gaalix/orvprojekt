@@ -2,27 +2,28 @@ import os
 from PIL import Image, ImageOps, ImageEnhance
 import numpy as np
 
-data_path = "../data"
+source = "../data"
 
 
 # loads images from ../data for each of the folders
 # applies augmentations to each original image (ending in 00000.jpg)
 # saves augmented images in the same folder with an added index
-def load_images(base_path):
-    for person in ["Mark", "Tomaz", "Gal"]:
-        person_path = os.path.join(base_path, person)
-        for filename in os.listdir(person_path):
-            print(filename)
-            if filename.endswith("00000.jpg"):
-                print(f"Augmenting image {filename}...")
-                image = Image.open(os.path.join(person_path, filename)).convert("RGB")
+def load_images(source_path, destination_path):
+    if not os.path.exists(destination_path):
+        os.makedirs(destination_path)
 
-                if person == "Gal":
-                    image = image.rotate(-90, expand=True)
+    for filename in os.listdir(source_path):
+        if filename.endswith(".jpg"):
+            print(f"Augmenting image {filename} from {person}.")
+            filepath = os.path.join(source_path, filename)
+            image = Image.open(filepath).convert("RGB")
 
-                for i in range(20):
-                    augmentations = augment_images(image)
-                    save_augmented_images(augmentations, person_path, filename, i+1)
+            if person == "Gal":
+                image = image.rotate(-90, expand=True)
+
+            for i in range(200):
+                augmentations = augment_images(image)
+                save_augmented_images(augmentations, destination_path, filename, i + 1)
 
 
 # Random horizontal flip based on probability
@@ -107,9 +108,10 @@ def custom_color_jitter(image, brightness=0.25, contrast=0.25, saturation=0.25):
 def augment_images(image):
     resized_image = image.resize((256, 256), Image.BICUBIC)
 
-    aug_image = custom_color_jitter(resized_image, np.random.uniform(0, 0.25), np.random.uniform(0, 0.4), np.random.uniform(0, 0.3))
-    aug_image = random_horizontal_flip(aug_image, 0.2)
-    aug_image = random_rotation(aug_image, 8)
+    aug_image = custom_color_jitter(resized_image, np.random.uniform(0, 0.15), np.random.uniform(0, 0.15),
+                                    np.random.uniform(0, 0.15))
+    aug_image = random_horizontal_flip(aug_image, 0.3)
+    aug_image = random_rotation(aug_image, 5)
     aug_image = random_perspective(aug_image)
 
     return aug_image
@@ -121,4 +123,8 @@ def save_augmented_images(image, base_path, original_filename, index):
     image.save(os.path.join(base_path, new_filename))
 
 
-load_images(data_path)
+people = ["Mark", "Gal", "Tomaz"]
+for person in people:
+    source_folder = f"../data/{person}OG"
+    destination_folder = f"../data/{person}"
+    load_images(source_folder, destination_folder)
