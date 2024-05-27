@@ -1,5 +1,5 @@
 import os
-from PIL import Image, ImageOps, ExifTags
+from PIL import Image, ImageOps, ImageEnhance
 import numpy as np
 
 data_path = "../data"
@@ -20,7 +20,7 @@ def load_images(base_path):
                 if person == "Gal":
                     image = image.rotate(-90, expand=True)
 
-                for i in range(1):
+                for i in range(20):
                     augmentations = augment_images(image)
                     save_augmented_images(augmentations, person_path, filename, i+1)
 
@@ -80,11 +80,35 @@ def _find_coefficients(pa, pb):
     return np.array(res).reshape(8)
 
 
+def custom_color_jitter(image, brightness=0.25, contrast=0.25, saturation=0.25):
+    # similar to torchvisions ColorJitter
+    # random brightness change
+    if brightness > 0:
+        brightness_factor = np.random.uniform(max(0, 1 - brightness), 1 + brightness)
+        enhancer = ImageEnhance.Brightness(image)
+        image = enhancer.enhance(brightness_factor)
+
+    # random contrast change
+    if contrast > 0:
+        contrast_factor = np.random.uniform(max(0, 1 - contrast), 1 + contrast)
+        enhancer = ImageEnhance.Contrast(image)
+        image = enhancer.enhance(contrast_factor)
+
+    # random saturation change
+    if saturation > 0:
+        saturation_factor = np.random.uniform(max(0, 1 - saturation), 1 + saturation)
+        enhancer = ImageEnhance.Color(image)
+        image = enhancer.enhance(saturation_factor)
+
+    return image
+
+
 # use augmentations to create a list of augmented images
 def augment_images(image):
     resized_image = image.resize((256, 256), Image.BICUBIC)
 
-    aug_image = random_horizontal_flip(resized_image, 0.2)
+    aug_image = custom_color_jitter(resized_image, np.random.uniform(0, 0.25), np.random.uniform(0, 0.4), np.random.uniform(0, 0.3))
+    aug_image = random_horizontal_flip(aug_image, 0.2)
     aug_image = random_rotation(aug_image, 8)
     aug_image = random_perspective(aug_image)
 
