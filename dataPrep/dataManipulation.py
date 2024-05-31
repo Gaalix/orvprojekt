@@ -1,6 +1,7 @@
 import os
 from PIL import Image, ImageOps, ImageEnhance
 import numpy as np
+import cv2
 
 source = "../data"
 
@@ -8,22 +9,26 @@ source = "../data"
 # loads images from ../data for each of the folders
 # applies augmentations to each original image (ending in 00000.jpg)
 # saves augmented images in the same folder with an added index
-def load_images(source_path, destination_path):
+def load_images(source_path, destination_path, person_filename):
     if not os.path.exists(destination_path):
         os.makedirs(destination_path)
 
-    for filename in os.listdir(source_path):
-        if filename.endswith(".jpg"):
-            print(f"Augmenting image {filename} from {person}.")
-            filepath = os.path.join(source_path, filename)
-            image = Image.open(filepath).convert("RGB")
+    cap = cv2.VideoCapture(source_path)
+    frame_count = 0
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if not ret:
+            break
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame = Image.fromarray(frame)
+        filename = f"{frame_count:05d}"
+        frame_count += 1
+        for i in range(10):
+            augmentations = augment_images(frame)
+            save_augmented_images(augmentations, destination_path, filename, i)
 
-            if person == "Gal":
-                image = image.rotate(-90, expand=True)
+    cap.release()
 
-            for i in range(200):
-                augmentations = augment_images(image)
-                save_augmented_images(augmentations, destination_path, filename, i + 1)
 
 
 # Random horizontal flip based on probability
@@ -117,14 +122,15 @@ def augment_images(image):
     return aug_image
 
 
-def save_augmented_images(image, base_path, original_filename, index):
+def save_augmented_images(image, base_path, filename, index):
     augmentation_index = f"{index:05d}"  # 5 digits, zero-padded for augmented images
-    new_filename = f"{original_filename[:-10]}_{augmentation_index}.jpg"  # original_index = index of original image
+    new_filename = f'{filename}_{augmentation_index}.jpg' # original_index = index of original image
     image.save(os.path.join(base_path, new_filename))
 
 
-people = ["Mark", "Gal", "Tomaz"]
-for person in people:
-    source_folder = f"../data/{person}OG"
-    destination_folder = f"../data/{person}"
-    load_images(source_folder, destination_folder)
+source_folder = f"../data/videos/"
+for filename in os.listdir(source_folder):
+    filename = os.path.basename(filename).split('.')[0]
+    destination_folder = f"../data/{filename}"
+    source_file = f"{source_folder}{filename}.mp4"
+    load_images(source_file, destination_folder, filename)
