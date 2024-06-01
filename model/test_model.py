@@ -1,31 +1,26 @@
-from keras.src.utils import load_img, img_to_array
-import numpy as np
 import tensorflow as tf
+from keras.src.legacy.preprocessing.image import ImageDataGenerator
 
-def test_model_with_image(model_path, image_path):
+def load_test_data(test_data_dir):
+    datagen = ImageDataGenerator()
+    test_generator = datagen.flow_from_directory(test_data_dir, target_size=(224, 224), batch_size=100, class_mode='binary')
+    return test_generator
+
+def test_model(model_path, test_data_dir):
     # Load the saved model
     model = tf.keras.models.load_model(model_path)
 
-    # Load the image
-    img = load_img(image_path, target_size=(224, 224))
-    img_array = img_to_array(img)
+    # Load the test data
+    test_generator = load_test_data(test_data_dir)
 
-    # Preprocess the image
-    img_array = np.expand_dims(img_array, axis=0)
-    img_array = img_array / 255.0
+    # Evaluate the model
+    loss, accuracy = model.evaluate(test_generator)
 
-    # Make a prediction
-    prediction = model.predict(img_array)
+    print(f"Test loss: {loss}")
+    print(f"Test accuracy: {accuracy}")
 
-    # Interpret the prediction
-    predicted_class = np.argmax(prediction)
+# Usage
+test_model("user_models/model_1.keras", "../data/")
 
-    return predicted_class
-
-# Test the function
-model_path = "user_models/model_1.keras"
-
-# loop for testing different images
-for i in range(1, 9):
-    image_path = f"../data/Tomaz/00000_0000{i}.jpg"
-    print(test_model_with_image(model_path, image_path))
+#0 = user
+#1 = unknown
