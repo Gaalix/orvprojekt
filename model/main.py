@@ -41,6 +41,8 @@ def load_data(data_dir):
     val_generator = datagen.flow_from_directory(data_dir, target_size=(224, 224), batch_size=100, class_mode='binary',
                                                 subset='validation')
 
+    print(train_generator.class_indices)
+
     return train_generator, val_generator
 
 
@@ -49,13 +51,13 @@ def tune_hyperparameters(train_generator, val_generator):
     tuner = kt.BayesianOptimization(
         build_model,
         objective='val_accuracy',
-        max_trials=10,
+        max_trials=5,
         directory='my_dir',
-        project_name='intro_to_kt')
+        project_name='2')
 
-    stop_early = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=3)
+    stop_early = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=2)
 
-    tuner.search(train_generator, validation_data=val_generator, epochs=10, callbacks=[stop_early])
+    tuner.search(train_generator, validation_data=val_generator, epochs=2, callbacks=[stop_early])
 
     best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
     print(f"""
@@ -72,8 +74,8 @@ data_dir = "../data"
 train_generator, val_generator = load_data(data_dir)
 
 best_model = tune_hyperparameters(train_generator, val_generator)
-best_model.fit(train_generator, validation_data=val_generator, epochs=50, callbacks=[EarlyStopping(patience=3)])
+best_model.fit(train_generator, validation_data=val_generator, epochs=20, callbacks=[EarlyStopping(patience=3)])
 
-user_id = 1
+user_id = 2
 model_path = f"user_models/model_{user_id}.keras"
 best_model.save(model_path)

@@ -20,7 +20,7 @@ def test_model(model_path, test_data_dir):
     print(f"Test accuracy: {accuracy}")
 
 # Usage
-test_model("user_models/model_1.keras", "../data/")
+test_model("user_models/model_2.keras", "../testData/")
 
 #0 = user
 #1 = unknown
