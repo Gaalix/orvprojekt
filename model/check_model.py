@@ -48,7 +48,7 @@ def predict():
         # Debugging: Check the prediction result
         print("Prediction result:", prediction)
         
-        result = bool(prediction[0][0] > 0.5)
+        result = bool(prediction[0][0] < 0.8)
         return jsonify({'result': result})
     except Exception as e:
         error_message = str(e)
