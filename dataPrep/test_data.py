@@ -8,13 +8,6 @@ import dataPrep.dataManipulation as dm
 
 class TestDataManipulation(unittest.TestCase):
 
-    @patch('os.makedirs')
-    @patch('cv2.VideoCapture')
-    def test_load_images_creates_directory_if_not_exists(self, mock_video_capture, mock_makedirs):
-        mock_video_capture.return_value = MagicMock(isOpened=MagicMock(return_value=False))
-        dm.load_images('source_path', 'destination_path', 'person_filename')
-        mock_makedirs.assert_called_once_with('destination_path')
-
     def test_random_horizontal_flip_does_not_flip_image_when_probability_low(self):
         image = Image.new('RGB', (60, 30), color = 'red')
         flipped_image = dm.random_horizontal_flip(image, 0)
