@@ -5,7 +5,7 @@ import base64
 import os
 
 # Define the path to your model
-MODEL_PATH = os.path.join(os.getcwd(), "orvprojekt\\model\\user_models", "model_gal.keras")
+MODEL_PATH = os.path.join(os.getcwd(), "orvprojekt\\model\\user_models", "model_tomaz.keras")
 
 app = Flask(__name__)
 
