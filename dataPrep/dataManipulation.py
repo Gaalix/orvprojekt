@@ -128,9 +128,4 @@ def save_augmented_images(image, base_path, filename, index):
     image.save(os.path.join(base_path, new_filename))
 
 
-source_folder = f"../data/videos/"
-for filename in os.listdir(source_folder):
-    filename = os.path.basename(filename).split('.')[0]
-    destination_folder = f"../data/{filename}"
-    source_file = f"{source_folder}{filename}.mp4"
-    load_images(source_file, destination_folder, filename)
+
