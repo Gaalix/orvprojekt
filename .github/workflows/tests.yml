@@ -24,3 +24,13 @@ jobs:
       - name: Run tests
         run: |
           python -m unittest dataPrep/test_data.py
+
+  trigger_deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Deploy Workflow
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Deploy to Docker Hub
+          token: ${{ secrets.GITHUB_TOKEN }}
