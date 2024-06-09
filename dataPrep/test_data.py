@@ -25,7 +25,7 @@ class TestDataManipulation(unittest.TestCase):
 
     def test_custom_color_jitter_changes_image(self):
         image = Image.new('RGB', (60, 30), color = 'red')
-        jittered_image = dm.custom_color_jitter(image, 0.25, 0.25, 0.25)
+        jittered_image = dm.custom_color_jitter(image, 1, 1, 1)
         self.assertNotEqual(image.tobytes(), jittered_image.tobytes())
 
     def test_augment_images_returns_augmented_image(self):
