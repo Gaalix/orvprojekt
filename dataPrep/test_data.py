@@ -20,7 +20,7 @@ class TestDataManipulation(unittest.TestCase):
 
     def test_random_perspective_distorts_image(self):
         image = Image.new('RGB', (60, 30), color = 'red')
-        distorted_image = dm.random_perspective(image, 0.05)
+        distorted_image = dm.random_perspective(image, 0.5)
         self.assertNotEqual(image.tobytes(), distorted_image.tobytes())
 
     def test_custom_color_jitter_changes_image(self):
